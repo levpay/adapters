@@ -3,6 +3,8 @@ package mock
 import (
 	"bytes"
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sync"
@@ -24,6 +26,7 @@ type Item struct {
 type Mock struct {
 	mtx   *sync.RWMutex
 	t     *testing.T
+	conns map[string]*mockConn
 	Items []Item
 }
 
@@ -33,7 +36,20 @@ func New(t *testing.T) (m *Mock) {
 		mtx: &sync.RWMutex{},
 		t:   t,
 	}
-	sql.Register("mock", &mockDriver{})
+	sql.Register("mock", &Mock{})
+	return
+}
+
+// Open makes Mock implement driver.Driver
+func (md *Mock) Open(dsn string) (c driver.Conn, err error) {
+	md.mtx.Lock()
+	defer md.mtx.Unlock()
+	md.conns = make(map[string]*mockConn)
+	md.conns["prest"] = &mockConn{}
+	c, ok := md.conns[dsn]
+	if !ok {
+		return c, fmt.Errorf("expected a connection to be available, but it is not")
+	}
 	return
 }
 

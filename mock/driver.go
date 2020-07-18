@@ -2,27 +2,9 @@ package mock
 
 import (
 	"database/sql/driver"
-	"fmt"
-	"sync"
 )
 
-type mockDriver struct {
-	sync.Mutex
-	conns map[string]*mockConn
-}
-
-func (md *mockDriver) Open(dsn string) (c driver.Conn, err error) {
-	md.Lock()
-	defer md.Unlock()
-	md.conns = make(map[string]*mockConn)
-	md.conns["prest"] = &mockConn{}
-	c, ok := md.conns[dsn]
-	if !ok {
-		return c, fmt.Errorf("expected a connection to be available, but it is not")
-	}
-	return
-}
-
+// mockConn is the mock of driver.Conn
 type mockConn struct{}
 
 func (mc *mockConn) Begin() (driver.Tx, error)                    { return mc, nil }
