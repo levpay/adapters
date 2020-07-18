@@ -434,7 +434,7 @@ func TestMock_Query(t *testing.T) {
 }
 
 func TestMock_GetTransaction(t *testing.T) {
-	sql.Register("mock", &mockDriver{})
+	sql.Register("mock", &Mock{})
 	type fields struct {
 		mtx *sync.RWMutex
 		t   *testing.T
