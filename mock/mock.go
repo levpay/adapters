@@ -36,6 +36,12 @@ func New(t *testing.T) (m *Mock) {
 		mtx: &sync.RWMutex{},
 		t:   t,
 	}
+	drivers := sql.Drivers()
+	for _, driver := range drivers {
+		if driver == "mock" {
+			return
+		}
+	}
 	sql.Register("mock", m)
 	return
 }
