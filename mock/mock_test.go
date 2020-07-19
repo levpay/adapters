@@ -434,7 +434,6 @@ func TestMock_Query(t *testing.T) {
 }
 
 func TestMock_GetTransaction(t *testing.T) {
-	sql.Register("mock", &Mock{})
 	type fields struct {
 		mtx *sync.RWMutex
 		t   *testing.T
@@ -454,10 +453,7 @@ func TestMock_GetTransaction(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &Mock{
-				mtx: tt.fields.mtx,
-				t:   tt.fields.t,
-			}
+			m := New(t)
 			gotTx, err := m.GetTransaction()
 			errMactches := ((err != nil) != tt.wantErr)
 			assert.False(t, errMactches, fmt.Sprintf("Mock.GetTransaction() error = %v, wantErr %v", err, tt.wantErr))

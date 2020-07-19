@@ -36,7 +36,7 @@ func New(t *testing.T) (m *Mock) {
 		mtx: &sync.RWMutex{},
 		t:   t,
 	}
-	sql.Register("mock", &Mock{})
+	sql.Register("mock", m)
 	return
 }
 
@@ -142,7 +142,6 @@ func (m *Mock) PaginateIfPossible(r *http.Request) (paginatedQuery string, err e
 
 // GetTransaction mock
 func (m *Mock) GetTransaction() (tx *sql.Tx, err error) {
-	m.t.Helper()
 	db, err := sql.Open("mock", "prest")
 	if err != nil {
 		return
